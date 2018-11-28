@@ -210,6 +210,13 @@ platform :ios do
           keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
           keychain_password: ENV["MATCH_PASSWORD"])
 
+    unless ENV["CRU_CALLDIRECTORY_APP_IDENTIFIER"].nil?
+      match(type: options[:type],
+          username: ENV['CRU_FASTLANE_USERNAME'],
+          app_identifier: ENV['CRU_CALLDIRECTORY_APP_IDENTIFIER'],
+          keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+          keychain_password: ENV["MATCH_PASSWORD"])
+    end 
   end
 
   lane :cru_update_commit do |options|
