@@ -90,6 +90,8 @@ platform :ios do
 
     locales.each do |locale|
       begin
+        dir = "../#{scheme}/#{locale}.lproj"
+        Dir.mkdir(dir) unless File.exists?(dir)
         onesky_download(
             public_key: ENV["ONESKY_PUBLIC_KEY"],
             secret_key: ENV["ONESKY_SECRET_KEY"],
@@ -111,6 +113,7 @@ platform :ios do
     filename = options[:filename]
 
     begin
+      git_add(path: "*/#{filename}")
       git_commit(path: "*/#{filename}",
                  message: "[skip ci] Adding latest localization files from Onesky")
     rescue
