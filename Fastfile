@@ -41,7 +41,7 @@ platform :ios do
         skip_metadata: !include_metadata,
         app_version: version_number,
         automatic_release: automatic_release,
-        submit_for_review: true,
+        submit_for_review: false,
         submission_information: cru_submission_information
     )
 
