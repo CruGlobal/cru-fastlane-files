@@ -25,6 +25,7 @@ platform :ios do
 
     automatic_release = options.key?(:auto_release) && options[:auto_release] || false
     include_metadata = options.key?(:include_metadata) && options[:include_metadata] || false
+    submit_for_review = options.key?(:submit) ? options[:submit] : true
     
     version_number = get_version_number(
         target: target
@@ -41,14 +42,16 @@ platform :ios do
         skip_metadata: !include_metadata,
         app_version: version_number,
         automatic_release: automatic_release,
-        submit_for_review: true,
+        submit_for_review: submit_for_review,
         submission_information: cru_submission_information
     )
 
     cru_bump_version_number(version_number: version_number)
 
     cru_notify_users(message: "#{target} iOS Release Build #{version_number} (#{build_number}) submitted to App Store.")
-    cru_notify_users(message: "Build has been submitted for review and will be #{automatic_release ? 'automatically' : 'manually'} released.")
+    if submit_for_review
+      cru_notify_users(message: "Build has been submitted for review and will be #{automatic_release ? 'automatically' : 'manually'} released.")
+    end
 
   end
 
