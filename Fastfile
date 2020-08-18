@@ -25,7 +25,7 @@ platform :ios do
 
     automatic_release = options.key?(:auto_release) && options[:auto_release] || false
     include_metadata = options.key?(:include_metadata) && options[:include_metadata] || false
-    submit_for_review = options.key?(:submit) && options[:submit] || true
+    submit_for_review = options.key?(:submit) ? options[:submit] : true
     
     version_number = get_version_number(
         target: target
