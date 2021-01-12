@@ -77,6 +77,9 @@ platform :ios do
         changelog: ENV["TRAVIS_COMMIT_MESSAGE"]
     )
 
+    sh('git remote set-branches --add origin master')
+    sh('git fetch origin master:master')
+    sh('git checkout master')
     cru_update_commit(message: "[skip ci] Build number bump to ##{build_number}")
     push_to_git_remote
 
