@@ -59,7 +59,9 @@ platform :ios do
   lane :beta do
     target = ENV["CRU_TARGET"]
 
-    build_number = cru_set_build_number
+    build_number = increment_build_number({
+      build_number: latest_testflight_build_number + 1
+    })
     version_number =  get_version_number(
         target: target
     )
@@ -76,9 +78,6 @@ platform :ios do
         dev_portal_team_id: ENV["CRU_DEV_PORTAL_TEAM_ID"],
         changelog: ENV["TRAVIS_COMMIT_MESSAGE"]
     )
-
-    cru_update_commit(message: "[skip ci] Build number bump to ##{build_number}")
-    push_to_git_remote
 
     cru_notify_users(message: "#{target} iOS Beta Build ##{build_number} released to TestFlight.")
   end
@@ -125,17 +124,7 @@ platform :ios do
   end
 
   # Helper functions
-
-  lane :cru_set_build_number do
-    build_number = ENV["TRAVIS_BUILD_NUMBER"]
-
-    increment_build_number(
-        build_number: build_number
-    )
-
-    build_number
-  end
-
+  
   lane :cru_build_app do |options|
     profile_name = options[:profile_name] || ENV["CRU_APPSTORE_PROFILE_NAME"]
     type = options[:type] || 'appstore'
