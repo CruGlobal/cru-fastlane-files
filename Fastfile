@@ -60,7 +60,10 @@ platform :ios do
     target = ENV["CRU_TARGET"]
 
     build_number = increment_build_number({
-      build_number: latest_testflight_build_number + 1
+      build_number: latest_testflight_build_number({
+        username: ENV['CRU_FASTLANE_USERNAME'],
+        app_identifier: ENV["CRU_APP_IDENTIFIER"],
+      }) + 1
     })
     version_number =  get_version_number(
         target: target
