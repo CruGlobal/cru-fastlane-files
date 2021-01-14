@@ -63,7 +63,7 @@ platform :ios do
       build_number: latest_testflight_build_number({
         username: ENV['CRU_FASTLANE_USERNAME'],
         app_identifier: ENV["CRU_APP_IDENTIFIER"],
-      }) + 1
+      }) + 2
     })
     version_number =  get_version_number(
         target: target
