@@ -34,6 +34,7 @@ platform :ios do
     build_number = get_build_number
 
     upload_to_app_store(
+        api_key_path: ENV['CRU_API_KEY_PATH'],
         username: ENV['CRU_FASTLANE_USERNAME'],
         app_identifier: ENV["CRU_APP_IDENTIFIER"],
         build_number: build_number,
@@ -61,6 +62,7 @@ platform :ios do
 
     build_number = increment_build_number({
       build_number: latest_testflight_build_number({
+        api_key_path: ENV['CRU_API_KEY_PATH'],
         username: ENV['CRU_FASTLANE_USERNAME'],
         app_identifier: ENV["CRU_APP_IDENTIFIER"],
       }) + 1
@@ -75,6 +77,7 @@ platform :ios do
     ipa_path = cru_build_app
 
     testflight(
+        api_key_path: ENV['CRU_API_KEY_PATH'],
         username: ENV['CRU_FASTLANE_USERNAME'],
         app_identifier: ENV["CRU_APP_IDENTIFIER"],
         ipa: ipa_path,
@@ -211,6 +214,7 @@ platform :ios do
 
   lane :cru_fetch_certs do |options|
     match(type: options[:type],
+      api_key_path: ENV['CRU_API_KEY_PATH'],
       username: ENV['CRU_FASTLANE_USERNAME'],
       app_identifier: ENV['CRU_APP_IDENTIFIER'],
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
@@ -218,6 +222,7 @@ platform :ios do
 
     unless ENV["CRU_CALLDIRECTORY_APP_IDENTIFIER"].nil?
       match(type: options[:type],
+          api_key_path: ENV['CRU_API_KEY_PATH'],
           username: ENV['CRU_FASTLANE_USERNAME'],
           app_identifier: ENV['CRU_CALLDIRECTORY_APP_IDENTIFIER'],
           keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
