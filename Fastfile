@@ -78,7 +78,6 @@ platform :ios do
 
     testflight(
         api_key_path: ENV['CRU_API_KEY_PATH'],
-        username: ENV['CRU_FASTLANE_USERNAME'],
         app_identifier: ENV["CRU_APP_IDENTIFIER"],
         ipa: ipa_path,
         dev_portal_team_id: ENV["CRU_DEV_PORTAL_TEAM_ID"],
