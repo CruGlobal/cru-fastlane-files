@@ -295,4 +295,208 @@ platform :ios do
         is_prerelease: true
     )
   end
+
+  # Shared Lanes
+
+  # Runs your Xcode tests for the provided scheme.
+  #
+  # fastlane action: https://docs.fastlane.tools/actions/run_tests/
+  #
+  # options:
+  # - scheme: Specificy the name of the scheme you want to run tests on.  The scheme should be marked as shared in Xcode.
+  #
+  lane :cru_shared_lane_run_tests do |options|
+
+    scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
+
+    run_tests(
+        scheme: scheme
+    )
+  end
+
+  # Downloads OneSky localizations by locale to the Xcode project directory and then git adds and commits the localization file.
+  #
+  # plugin: https://github.com/thekie/fastlane-plugin-onesky
+  #
+  # options:
+  # - one_sky_download_to_project_directory: The directory name localization files should be downloaded to.
+  # - one_sky_filename:
+  # - one_sky_localizations: Comma separated string list of locales to download from OneSky.
+  # - one_sky_project_id:
+  # - one_sky_public_key:
+  # - one_sky_secret_key:
+  #
+  lane :cru_shared_lane_download_and_commit_latest_one_sky_localizations do |options|
+
+    one_sky_download_to_project_directory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
+    one_sky_filename = options[:one_sky_filename] || ENV["ONESKY_FILENAME"]
+    one_sky_localizations_string = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
+    one_sky_project_id = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
+    one_sky_public_key = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
+    one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"]
+    
+    one_sky_localizations_array = one_sky_localizations_string.split(",")
+
+    one_sky_localizations_array.each do |locale|
+        
+        begin
+            
+            directory = "../#{one_sky_download_to_project_directory}/#{locale}.lproj"
+            Dir.mkdir(directory) unless File.exists?(directory)
+            
+            onesky_download(
+                destination: "./#{one_sky_download_to_project_directory}/#{locale}.lproj/#{one_sky_filename}",
+                filename: one_sky_filename,
+                locale: locale,
+                project_id: one_sky_project_id,
+                public_key: one_sky_public_key,
+                secret_key: one_sky_secret_key
+            )
+        rescue
+            puts("Failed to import #{locale}")
+        end
+    end
+
+    begin
+        git_add(path: "*/#{one_sky_filename}")
+        git_commit(
+            path: "*/#{one_sky_filename}",
+            message: "[skip ci] Adding latest localization files from OneSky"
+        )
+    rescue
+      puts("Failed to commit localization files.. maybe none to commit?")
+    end
+  end
+
+  # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
+  #
+  # fastlane action: https://docs.fastlane.tools/actions/increment_build_number/
+  # fastlane action: https://docs.fastlane.tools/actions/latest_testflight_build_number/
+  #
+  # options:
+  # - api_key_path: Path to your App Store Connect API Key JSON file.
+  # - app_release_bundle_identifier: The bundle identifier for your xcode release configuration.
+  #
+  lane :cru_shared_lane_increment_xcode_project_build_number do |options|
+
+    api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
+    app_release_bundle_identifier = options[:app_release_bundle_identifier] || ENV["APP_RELEASE_BUNDLE_IDENTIFIER"]
+
+    latest_build_number = latest_testflight_build_number(
+        api_key_path: api_key_path,
+        app_identifier: app_release_bundle_identifier
+    )
+
+    specific_build_number = latest_build_number + 1
+
+    increment_build_number(build_number: specific_build_number)
+  end
+
+  # First updates the xcode project code signing settings for each provided target, setting automatic code signing to false and setting the provisioning profile name.
+  # Then uses match to fetch certificates from a git storage and adds them to the xcode project based on code signing settings.
+  #
+  # fastlane action: https://docs.fastlane.tools/actions/update_code_signing_settings/
+  # fastlane action: https://docs.fastlane.tools/actions/create_keychain/
+  # fastlane action: https://docs.fastlane.tools/actions/match/
+  # fastlane action: https://docs.fastlane.tools/actions/gym/
+  # fastlane action: https://docs.fastlane.tools/actions/testflight/
+  #
+  # options:
+  # - api_key_path: Path to your App Store Connect API Key JSON file. Required for match.
+  # - app_release_bundle_identifier: The bundle identifier for your xcode release configuration.
+  # - code_signing_app_bundle_ids: Comma separated string of bundle ids that require code signing.  This comma separated list should match up with the code signing provisioning profile names and targets.
+  # - code_signing_provisioning_profile_names: Comma separated string of provisioning profile names that require code signing.  This comma separated list should match up with the code signing app bundle ids and targets.
+  # - code_signing_targets: Comma separated string of targets that require code signing.  This comma separated list should match up with the code signing app bundle ids and provisioning profile names.
+  # - deploy_type: 
+  # - is_running_in_ci: If running fastlane from CI, this is used to create a keychain needed for match.  Local fastlane builds should not need to set this.
+  # - match_git_branch:
+  # - match_git_url:
+  # - match_keychain_name:
+  #
+  lane :cru_shared_lane_build_and_deploy_for_testflight_release do |options|
+
+    # Update code signing settings
+
+    api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
+    app_release_bundle_identifier = options[:app_release_bundle_identifier] || ENV["APP_RELEASE_BUNDLE_IDENTIFIER"]
+    code_signing_app_bundle_ids = options[:code_signing_app_bundle_ids] || ENV["CODE_SIGNING_APP_BUNDLE_IDS"]
+    code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
+    code_signing_targets = options[:code_signing_targets] || ENV["CODE_SIGNING_TARGETS"]
+    is_running_in_ci = options[:is_running_in_ci] || false
+    match_git_branch = options[:match_git_branch] || ENV["MATCH_GIT_BRANCH"]
+    match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
+    match_keychain_name = options[:match_keychain_name] || ENV["MATCH_KEYCHAIN_NAME"]
+
+    app_bundle_ids_array = code_signing_app_bundle_ids.split(",")
+    profile_names_array = code_signing_provisioning_profile_names.split(",")
+    targets_array = code_signing_targets.split(",")
+
+    targets_array.each_with_index do |target, index|
+
+        profile_name = profile_names_array[index]
+
+        puts "update code signing for target: #{target}, profile_name: #{profile_name}"
+
+        update_code_signing_settings(
+            use_automatic_signing: false, 
+            targets: target,
+            profile_name: profile_name
+        )
+    end
+
+    # Create Keychain needed for CI.
+
+    if is_running_in_ci
+        
+        puts "creating keychain for ci..."
+        
+        create_keychain(
+          name: match_keychain_name,
+          password: ENV["MATCH_PASSWORD"],
+          default_keychain: true,
+          unlock: true,
+          timeout: 3600,
+          add_to_search_list: true
+        )
+    else
+
+        puts "skipping create keychain..."
+    end
+
+    # Match - Release
+
+    match(
+        api_key_path: api_key_path,
+        app_identifier: app_bundle_ids_array,
+        git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION_PAT"]),
+        git_branch: match_git_branch,
+        git_url: match_git_url,
+        keychain_name: match_keychain_name,
+        keychain_password: ENV["MATCH_PASSWORD"],
+        platform: "ios",
+        storage_mode: "git",
+        type: "appstore"
+    )
+
+    # Gym - Release
+
+    release_ipa_path = gym(
+        scheme: ENV["GYM_RELEASE_SCHEME"],
+        export_method: "app-store",
+        export_options: {
+            provisioningProfiles: {
+                ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"] => ENV["GYM_RELEASE_PROVISIONING_PROFILE"]
+            }
+        }
+    )
+
+    # TestFlight - Release
+
+    testflight(
+        api_key_path: api_key_path,
+        app_identifier: app_release_bundle_identifier,
+        ipa: release_ipa_path,
+        skip_waiting_for_build_processing: true
+    )
+  end
 end
