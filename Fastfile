@@ -375,19 +375,16 @@ platform :ios do
   #
   # options:
   # - api_key_path: Path to your App Store Connect API Key JSON file.
-  # - apple_id_username: Your Apple ID Username. 
   # - app_release_bundle_identifier: The bundle identifier for your xcode release configuration.
   #
   lane :cru_shared_lane_increment_xcode_project_build_number do |options|
 
     api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
-    apple_id_username = options[:apple_id_username] || ENV["APPLE_ID_USERNAME"]
     app_release_bundle_identifier = options[:app_release_bundle_identifier] || ENV["APP_RELEASE_BUNDLE_IDENTIFIER"]
 
     latest_build_number = latest_testflight_build_number(
         api_key_path: api_key_path,
-        app_identifier: app_release_bundle_identifier,
-        username: apple_id_username
+        app_identifier: app_release_bundle_identifier
     )
 
     specific_build_number = latest_build_number + 1
@@ -406,7 +403,6 @@ platform :ios do
   #
   # options:
   # - api_key_path: Path to your App Store Connect API Key JSON file. Required for match.
-  # - apple_id_username: Your Apple ID Username. 
   # - app_release_bundle_identifier: The bundle identifier for your xcode release configuration.
   # - code_signing_app_bundle_ids: Comma separated string of bundle ids that require code signing.  This comma separated list should match up with the code signing provisioning profile names and targets.
   # - code_signing_provisioning_profile_names: Comma separated string of provisioning profile names that require code signing.  This comma separated list should match up with the code signing app bundle ids and targets.
@@ -416,14 +412,12 @@ platform :ios do
   # - match_git_branch:
   # - match_git_url:
   # - match_keychain_name:
-  # - team_id: The ID of your App Store Connect team.
   #
   lane :cru_shared_lane_build_and_deploy_for_testflight_release do |options|
 
     # Update code signing settings
 
     api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
-    apple_id_username = options[:apple_id_username] || ENV["APPLE_ID_USERNAME"]
     app_release_bundle_identifier = options[:app_release_bundle_identifier] || ENV["APP_RELEASE_BUNDLE_IDENTIFIER"]
     code_signing_app_bundle_ids = options[:code_signing_app_bundle_ids] || ENV["CODE_SIGNING_APP_BUNDLE_IDS"]
     code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
@@ -432,7 +426,6 @@ platform :ios do
     match_git_branch = options[:match_git_branch] || ENV["MATCH_GIT_BRANCH"]
     match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
     match_keychain_name = options[:match_keychain_name] || ENV["MATCH_KEYCHAIN_NAME"]
-    team_id = options[:team_id] || ENV["APPLE_DEVELOPER_TEAM_ID"]
 
     app_bundle_ids_array = code_signing_app_bundle_ids.split(",")
     profile_names_array = code_signing_provisioning_profile_names.split(",")
@@ -482,8 +475,7 @@ platform :ios do
         keychain_password: ENV["MATCH_PASSWORD"],
         platform: "ios",
         storage_mode: "git",
-        type: "appstore",
-        username: apple_id_username
+        type: "appstore"
     )
 
     # Gym - Release
@@ -501,11 +493,10 @@ platform :ios do
     # TestFlight - Release
 
     testflight(
+        api_key_path: api_key_path,
         app_identifier: app_release_bundle_identifier,
-        dev_portal_team_id: team_id,
         ipa: release_ipa_path,
-        skip_waiting_for_build_processing: true,
-        username: apple_id_username
+        skip_waiting_for_build_processing: true
     )
   end
 end
