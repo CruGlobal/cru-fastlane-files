@@ -298,20 +298,6 @@ platform :ios do
 
   # Shared Lanes
 
-  # Runs pod install for the project.
-  #
-  # fastlane action: https://docs.fastlane.tools/actions/cocoapods/
-  #
-  # options:
-  # - podfile: Explicitly specify the path to the Cocoapods' Podfile. You can either set it to the Podfile's path or to the folder containing the Podfile file.
-  #
-  lane :cru_shared_lane_pod_install do |options|
-
-    podfile = options[:podfile] || "./Podfile"
-
-    cocoapods(podfile: podfile)
-  end
-
   # Runs your Xcode tests for the provided scheme.
   #
   # fastlane action: https://docs.fastlane.tools/actions/run_tests/
