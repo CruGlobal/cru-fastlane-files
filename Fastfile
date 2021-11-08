@@ -333,7 +333,7 @@ platform :ios do
     one_sky_localizations_string = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
     one_sky_project_id = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
     one_sky_public_key = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
-    one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"]
+    one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
     
     one_sky_localizations_array = one_sky_localizations_string.split(",")
 
