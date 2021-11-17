@@ -324,7 +324,6 @@ platform :ios do
   # - one_sky_localizations: Comma separated string list of locales to download from OneSky.
   # - one_sky_project_id:
   # - one_sky_public_key:
-  # - one_sky_secret_key:
   #
   lane :cru_shared_lane_download_and_commit_latest_one_sky_localizations do |options|
 
@@ -333,7 +332,6 @@ platform :ios do
     one_sky_localizations_string = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
     one_sky_project_id = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
     one_sky_public_key = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
-    one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
     
     one_sky_localizations_array = one_sky_localizations_string.split(",")
 
@@ -349,8 +347,7 @@ platform :ios do
                 filename: one_sky_filename,
                 locale: locale,
                 project_id: one_sky_project_id,
-                public_key: one_sky_public_key,
-                secret_key: one_sky_secret_key
+                public_key: one_sky_public_key
             )
         rescue
             puts("Failed to import #{locale}")
