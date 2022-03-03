@@ -345,6 +345,7 @@ platform :ios do
 
             if locale == "en"
               xcodeDirectoryName = "Base"
+            end
             
             directory = "../#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj"
             Dir.mkdir(directory) unless File.exists?(directory)
