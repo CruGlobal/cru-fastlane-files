@@ -340,12 +340,17 @@ platform :ios do
     one_sky_localizations_array.each do |locale|
         
         begin
+
+            xcodeDirectoryName = locale
+
+            if locale == "en"
+              xcodeDirectoryName = "Base"
             
-            directory = "../#{one_sky_download_to_project_directory}/#{locale}.lproj"
+            directory = "../#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj"
             Dir.mkdir(directory) unless File.exists?(directory)
-            
+
             onesky_download(
-                destination: "./#{one_sky_download_to_project_directory}/#{locale}.lproj/#{one_sky_filename}",
+                destination: "./#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj/#{one_sky_filename}",
                 filename: one_sky_filename,
                 locale: locale,
                 project_id: one_sky_project_id,
