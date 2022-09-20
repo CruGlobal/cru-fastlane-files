@@ -317,7 +317,6 @@ platform :ios do
     )
 
     run_tests(
-        build_for_testing: false,
         derived_data_path: "folder_for_derived_data",
         scheme: scheme,
         test_without_building: true
