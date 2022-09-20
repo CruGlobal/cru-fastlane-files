@@ -311,14 +311,14 @@ platform :ios do
 
     run_tests(
         build_for_testing: true,
-        clean: false,
+        derived_data_path: "folder_for_derived_data",
         scheme: scheme,
         test_without_building: false
     )
 
     run_tests(
         build_for_testing: false,
-        clean: true,
+        derived_data_path: "folder_for_derived_data",
         scheme: scheme,
         test_without_building: true
     )
