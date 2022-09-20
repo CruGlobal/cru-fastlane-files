@@ -310,16 +310,7 @@ platform :ios do
     scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
 
     run_tests(
-        build_for_testing: true,
-        derived_data_path: "folder_for_derived_data",
-        scheme: scheme,
-        test_without_building: false
-    )
-
-    run_tests(
-        derived_data_path: "folder_for_derived_data",
-        scheme: scheme,
-        test_without_building: true
+        scheme: scheme
     )
   end
 
