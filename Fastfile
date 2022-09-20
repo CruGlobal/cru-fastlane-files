@@ -310,7 +310,17 @@ platform :ios do
     scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
 
     run_tests(
-        scheme: scheme
+        build_for_testing: true,
+        clean: false,
+        scheme: scheme,
+        test_without_building: false
+    )
+
+    run_tests(
+        build_for_testing: false,
+        clean: true,
+        scheme: scheme,
+        test_without_building: true
     )
   end
 
