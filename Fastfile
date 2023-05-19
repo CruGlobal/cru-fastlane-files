@@ -323,6 +323,47 @@ platform :ios do
     )
   end
 
+  # Uses slather to convert Xcode code coverage report .xcresult format to supported code coverage format.
+  #
+  # fastlane action: http://docs.fastlane.tools/actions/slather/
+  #
+  # options:
+  # - cobertura_xml: Tell slather that it should output results as Cobertura XML format.
+  # - configuration: Configuration to use when calling slather (since slather-2.4.1).
+  # - github: Tell slather that it is running on Github Actions.
+  # - output_directory: Tell slather the location of for your output files.
+  # - proj: The project that slather looks at.
+  # - scheme: Scheme to use when calling slather.
+  # - source_directory: Tell slather the location of your source files.
+  # - verbose: Tell slather to enable verbose mode.
+  # - workspace: The workspace that slather looks at.
+  #
+  lane :cru_shared_lane_slather_convert_xcresult do |options|
+
+    cobertura_xml = options[:cobertura_xml] || nil
+    configuration = options[:configuration] || nil
+    github = options[:github] || nil
+    output_directory = options[:output_directory] || nil
+    proj = options[:proj] || nil
+    scheme = options[:scheme] || nil
+    source_directory = options[:source_directory] || nil
+    verbose = options[:verbose] || nil
+    workspace = options[:workspace] || nil
+
+    slather(
+      cobertura_xml: cobertura_xml,
+      configuration: configuration,
+      github: github,
+      output_directory: output_directory,
+      proj: proj,
+      scheme: scheme,
+      source_directory: source_directory,
+      verbose: verbose,
+      workspace: workspace
+    )
+
+  end
+
   # Downloads OneSky localizations by locale to the Xcode project directory and then git adds and commits the localization file.
   #
   # plugin: https://github.com/thekie/fastlane-plugin-onesky
