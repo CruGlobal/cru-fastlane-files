@@ -434,6 +434,7 @@ platform :ios do
     code_signing_app_bundle_ids = options[:code_signing_app_bundle_ids] || ENV["CODE_SIGNING_APP_BUNDLE_IDS"]
     code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
     code_signing_targets = options[:code_signing_targets] || ENV["CODE_SIGNING_TARGETS"]
+    code_signing_team_id = ENV["CODE_SIGNING_TEAM_ID"]
     is_running_in_ci = options[:is_running_in_ci] || false
     match_git_branch = options[:match_git_branch] || ENV["MATCH_GIT_BRANCH"]
     match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
@@ -452,6 +453,7 @@ platform :ios do
         update_code_signing_settings(
             use_automatic_signing: false, 
             targets: target,
+            team_id: code_signing_team_id,
             profile_name: profile_name
         )
     end
@@ -487,6 +489,7 @@ platform :ios do
         keychain_password: ENV["MATCH_PASSWORD"],
         platform: "ios",
         storage_mode: "git",
+        team_id: code_signing_team_id,
         type: "appstore"
     )
 
@@ -494,12 +497,14 @@ platform :ios do
 
     release_ipa_path = gym(
         scheme: ENV["GYM_RELEASE_SCHEME"],
+        configuration: "Release",
         export_method: "app-store",
         export_options: {
             provisioningProfiles: {
                 ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"] => ENV["GYM_RELEASE_PROVISIONING_PROFILE"]
             }
-        }
+        },
+        xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=" + code_signing_team_id
     )
 
     # TestFlight - Release
