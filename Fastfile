@@ -378,50 +378,80 @@ platform :ios do
   #
   lane :cru_shared_lane_download_and_commit_latest_one_sky_localizations do |options|
 
-    one_sky_download_to_project_directory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
-    one_sky_filename = options[:one_sky_filename] || ENV["ONESKY_FILENAME"]
     one_sky_localizations_string = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
+    one_sky_localizations_array = one_sky_localizations_string.split(",")
+
+    stringsFileName = options[:one_sky_filename] || ENV["ONESKY_FILENAME"]
+    stringsDictFileName = "Localizable.stringsdict"
+
+    one_sky_localizations_array.each do |locale|
+      
+      xcodeDirectoryNameForStrings = locale
+      xcodeDirectoryNameForStringsDict = locale
+
+      if locale == "en"
+        xcodeDirectoryNameForStrings = "Base"
+        xcodeDirectoryNameForStringsDict = "English"
+      end
+
+      download_onesky_localizations(
+        xcodeDirectoryName: xcodeDirectoryNameForStrings, 
+        filename: stringsFileName,
+        locale: locale
+      )
+      download_onesky_localizations(
+        xcodeDirectoryName: xcodeDirectoryNameForStringsDict, 
+        filename: stringsDictFileName,
+        locale: locale
+      )
+
+    end
+
+    begin
+
+      filesToCommit = ["*/#{stringsFileName}", "*/#{stringsDictFileName}"]
+
+      git_add(path: filesToCommit)
+      git_commit(
+          path: filesToCommit,
+          message: "[skip ci] Adding latest localization files from OneSky"
+      )
+
+    rescue Exception => e
+      puts("Failed to commit localization files.. maybe none to commit?")
+      puts("Exception: #{e}")
+    end
+  end
+
+  lane :download_onesky_localizations do |options|
+
+    one_sky_download_to_project_directory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
     one_sky_project_id = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
     one_sky_public_key = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
     one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
     
-    one_sky_localizations_array = one_sky_localizations_string.split(",")
-
-    one_sky_localizations_array.each do |locale|
-        
-        begin
-
-            xcodeDirectoryName = locale
-
-            if locale == "en"
-              xcodeDirectoryName = "Base"
-            end
-            
-            directory = "../#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj"
-            Dir.mkdir(directory) unless File.exists?(directory)
-
-            onesky_download(
-                destination: "./#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj/#{one_sky_filename}",
-                filename: one_sky_filename,
-                locale: locale,
-                project_id: one_sky_project_id,
-                public_key: one_sky_public_key,
-                secret_key: one_sky_secret_key
-            )
-        rescue
-            puts("Failed to import #{locale}")
-        end
-    end
+    xcodeDirectoryName = options[:xcodeDirectoryName]
+    filename = options[:filename]
+    locale = options[:locale]
 
     begin
-        git_add(path: "*/#{one_sky_filename}")
-        git_commit(
-            path: "*/#{one_sky_filename}",
-            message: "[skip ci] Adding latest localization files from OneSky"
-        )
-    rescue
-      puts("Failed to commit localization files.. maybe none to commit?")
-    end
+            
+      directory = "../#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj"
+      Dir.mkdir(directory) unless File.exists?(directory)
+
+      onesky_download(
+          destination: "./#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj/#{filename}",
+          filename: filename,
+          locale: locale,
+          project_id: one_sky_project_id,
+          public_key: one_sky_public_key,
+          secret_key: one_sky_secret_key
+      )
+
+      rescue
+          puts("Failed to import #{filename} to #{directory})")
+      end
+
   end
 
   # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
