@@ -306,6 +306,7 @@ platform :ios do
   # - code_coverage: Should code coverage be generated? (Xcode 7 and up).
   # - derived_data_path: The directory where build products and other derived data will go.
   # - output_directory: The directory in which all reports will be stored.
+  # - result_bundle: Should an Xcode result bundle be generated in the output directory.
   # - scheme: Specificy the name of the scheme you want to run tests on.  The scheme should be marked as shared in Xcode.
   #
   lane :cru_shared_lane_run_tests do |options|
@@ -313,12 +314,14 @@ platform :ios do
     code_coverage = options[:code_coverage] || nil
     derived_data_path = options[:derived_data_path] || nil
     output_directory = options[:output_directory] || nil
+    result_bundle = options[:result_bundle] || false
     scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
 
     run_tests(
         code_coverage: code_coverage,
         derived_data_path: derived_data_path,
         output_directory: output_directory,
+        result_bundle: result_bundle,
         scheme: scheme
     )
   end
