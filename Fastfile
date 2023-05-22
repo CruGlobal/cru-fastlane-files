@@ -306,62 +306,27 @@ platform :ios do
   # - code_coverage: Should code coverage be generated? (Xcode 7 and up).
   # - derived_data_path: The directory where build products and other derived data will go.
   # - output_directory: The directory in which all reports will be stored.
+  # - result_bundle: Should an Xcode result bundle be generated in the output directory.
   # - scheme: Specificy the name of the scheme you want to run tests on.  The scheme should be marked as shared in Xcode.
+  # - xcargs: Pass additional arguments to xcodebuild. Be sure to quote the setting names and values e.g. OTHER_LDFLAGS="-ObjC -lstdc++".
   #
   lane :cru_shared_lane_run_tests do |options|
 
     code_coverage = options[:code_coverage] || nil
     derived_data_path = options[:derived_data_path] || nil
     output_directory = options[:output_directory] || nil
+    result_bundle = options[:result_bundle] || false
     scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
+    xcargs = options[:xcargs] || nil
 
     run_tests(
         code_coverage: code_coverage,
         derived_data_path: derived_data_path,
         output_directory: output_directory,
-        scheme: scheme
+        result_bundle: result_bundle,
+        scheme: scheme,
+        xcargs: xcargs
     )
-  end
-
-  # Uses slather to convert Xcode code coverage report .xcresult format to supported code coverage format.
-  #
-  # fastlane action: http://docs.fastlane.tools/actions/slather/
-  #
-  # options:
-  # - cobertura_xml: Tell slather that it should output results as Cobertura XML format.
-  # - configuration: Configuration to use when calling slather (since slather-2.4.1).
-  # - github: Tell slather that it is running on Github Actions.
-  # - output_directory: Tell slather the location of for your output files.
-  # - proj: The project that slather looks at.
-  # - scheme: Scheme to use when calling slather.
-  # - source_directory: Tell slather the location of your source files.
-  # - verbose: Tell slather to enable verbose mode.
-  # - workspace: The workspace that slather looks at.
-  #
-  lane :cru_shared_lane_slather_convert_xcresult do |options|
-
-    cobertura_xml = options[:cobertura_xml] || nil
-    configuration = options[:configuration] || nil
-    github = options[:github] || nil
-    output_directory = options[:output_directory] || nil
-    proj = options[:proj] || nil
-    scheme = options[:scheme] || nil
-    source_directory = options[:source_directory] || nil
-    verbose = options[:verbose] || nil
-    workspace = options[:workspace] || nil
-
-    slather(
-      cobertura_xml: cobertura_xml,
-      configuration: configuration,
-      github: github,
-      output_directory: output_directory,
-      proj: proj,
-      scheme: scheme,
-      source_directory: source_directory,
-      verbose: verbose,
-      workspace: workspace
-    )
-
   end
 
   # Downloads OneSky localizations by locale to the Xcode project directory and then git adds and commits the localization file.
