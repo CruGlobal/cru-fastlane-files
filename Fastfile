@@ -343,30 +343,42 @@ platform :ios do
   #
   lane :cru_shared_lane_download_and_commit_latest_one_sky_localizations do |options|
 
-    one_sky_localizations_string = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
-    one_sky_localizations_array = one_sky_localizations_string.split(",")
+    oneSkyLocalesToDownloadCommaSeparatedString = options[:one_sky_localizations] || ENV["ONESKY_LOCALIZATIONS"]
+    oneSkyLocalesToDownloadArray = oneSkyLocalesToDownloadCommaSeparatedString.split(",")
 
-    stringsFileName = options[:one_sky_filename] || ENV["ONESKY_FILENAME"]
-    stringsDictFileName = "Localizable.stringsdict"
+    oneSkyDownloadToProjectDirectory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
+    stringsFilename = options[:one_sky_filename] || ENV["ONESKY_FILENAME"] || "Localizable.strings"
+    stringsDictFilename = "Localizable.stringsdict"
+    oneSkyProjectId = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
+    oneSkyPublicKey = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
+    oneSkySecretKey = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
 
-    one_sky_localizations_array.each do |locale|
+    oneSkyLocalesToDownloadArray.each do |locale|
       
-      xcodeDirectoryNameForStrings = locale
-      xcodeDirectoryNameForStringsDict = locale
+      localizationFileDirectoryNameForStrings = locale
+      localizationFileDirectoryNameForStringsDict = locale
 
       if locale == "en"
-        xcodeDirectoryNameForStrings = "Base"
-        xcodeDirectoryNameForStringsDict = "English"
+        localizationFileDirectoryNameForStrings = "Base"
+        localizationFileDirectoryNameForStringsDict = "English"
       end
 
       download_onesky_localizations(
-        xcodeDirectoryName: xcodeDirectoryNameForStrings, 
-        filename: stringsFileName,
+        one_sky_download_to_project_directory: oneSkyDownloadToProjectDirectory,
+        one_sky_project_id: oneSkyProjectId,
+        one_sky_public_key: oneSkyPublicKey,
+        one_sky_secret_key: oneSkySecretKey,
+        localization_file_directory_name: localizationFileDirectoryNameForStrings, 
+        localization_file_name: stringsFilename,
         locale: locale
       )
       download_onesky_localizations(
-        xcodeDirectoryName: xcodeDirectoryNameForStringsDict, 
-        filename: stringsDictFileName,
+        one_sky_download_to_project_directory: oneSkyDownloadToProjectDirectory,
+        one_sky_project_id: oneSkyProjectId,
+        one_sky_public_key: oneSkyPublicKey,
+        one_sky_secret_key: oneSkySecretKey,
+        localization_file_directory_name: localizationFileDirectoryNameForStringsDict, 
+        localization_file_name: stringsDictFilename,
         locale: locale
       )
 
@@ -374,7 +386,7 @@ platform :ios do
 
     begin
 
-      filesToCommit = ["*/#{stringsFileName}", "*/#{stringsDictFileName}"]
+      filesToCommit = ["*/#{stringsFilename}", "*/#{stringsDictFilename}"]
 
       git_add(path: filesToCommit)
       git_commit(
@@ -390,31 +402,31 @@ platform :ios do
 
   lane :download_onesky_localizations do |options|
 
-    one_sky_download_to_project_directory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
-    one_sky_project_id = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
-    one_sky_public_key = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
-    one_sky_secret_key = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
+    oneSkyDownloadToProjectDirectory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
+    oneSkyProjectId = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
+    oneSkyPublicKey = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
+    oneSkySecretKey = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
     
-    xcodeDirectoryName = options[:xcodeDirectoryName]
-    filename = options[:filename]
+    localizationFileDirectoryName = options[:localization_file_directory_name]
+    localizationFilename = options[:localization_file_name]
     locale = options[:locale]
 
     begin
             
-      directory = "../#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj"
+      directory = "../#{oneSkyDownloadToProjectDirectory}/#{localizationFileDirectoryName}.lproj"
       Dir.mkdir(directory) unless File.exists?(directory)
 
       onesky_download(
-          destination: "./#{one_sky_download_to_project_directory}/#{xcodeDirectoryName}.lproj/#{filename}",
-          filename: filename,
+          destination: "./#{oneSkyDownloadToProjectDirectory}/#{localizationFileDirectoryName}.lproj/#{localizationFilename}",
+          filename: localizationFilename,
           locale: locale,
-          project_id: one_sky_project_id,
-          public_key: one_sky_public_key,
-          secret_key: one_sky_secret_key
+          project_id: oneSkyProjectId,
+          public_key: oneSkyPublicKey,
+          secret_key: oneSkySecretKey
       )
 
       rescue
-          puts("Failed to import #{filename} to #{directory})")
+          puts("Failed to import #{localizationFilename} to #{directory})")
       end
 
   end
