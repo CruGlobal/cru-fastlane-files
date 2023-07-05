@@ -425,8 +425,9 @@ platform :ios do
           secret_key: oneSkySecretKey
       )
 
-      rescue
+      rescue Exception => e
           puts("Failed to import #{localizationFilename} to #{directory})")
+          puts("Exception: #{e}")
       end
 
   end
