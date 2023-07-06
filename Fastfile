@@ -335,7 +335,6 @@ platform :ios do
   #
   # options:
   # - one_sky_download_to_project_directory: The directory name localization files should be downloaded to.
-  # - one_sky_filename:
   # - one_sky_localizations: Comma separated string list of locales to download from OneSky.
   # - one_sky_project_id:
   # - one_sky_public_key:
@@ -347,89 +346,93 @@ platform :ios do
     oneSkyLocalesToDownloadArray = oneSkyLocalesToDownloadCommaSeparatedString.split(",")
 
     oneSkyDownloadToProjectDirectory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
-    stringsFilename = options[:one_sky_filename] || ENV["ONESKY_FILENAME"] || "Localizable.strings"
-    stringsDictFilename = "Localizable.stringsdict"
+    
     oneSkyProjectId = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
     oneSkyPublicKey = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
     oneSkySecretKey = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
 
-    oneSkyLocalesToDownloadArray.each do |locale|
-      
-      localizationFileDirectoryNameForStrings = locale
-      localizationFileDirectoryNameForStringsDict = locale
+    localizationFilesToCommit = Array.new
 
-      if locale == "en"
-        localizationFileDirectoryNameForStrings = "Base"
-        localizationFileDirectoryNameForStringsDict = "English"
+    oneSkyLocalesToDownloadArray.each do |locale|
+
+      # Begin download Localizable.strings
+      begin
+
+        stringsFilename = "Localizable.strings"
+        directoryName = locale
+
+        if locale == "en"
+            directoryName = "Base"
+        end
+            
+        directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
+        Dir.mkdir(directory) unless File.exists?(directory)
+
+        destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsFilename}"
+  
+        onesky_download(
+            destination: destination,
+            filename: stringsFilename,
+            locale: locale,
+            project_id: oneSkyProjectId,
+            public_key: oneSkyPublicKey,
+            secret_key: oneSkySecretKey
+        )
+  
+      rescue Exception => e
+        puts("Failed to import #{stringsFilename} to #{directory})")
+        puts("Exception: #{e}")
+
+      else
+        localizationFilesToCommit.push(destination)
       end
 
-      download_onesky_localizations(
-        one_sky_download_to_project_directory: oneSkyDownloadToProjectDirectory,
-        one_sky_project_id: oneSkyProjectId,
-        one_sky_public_key: oneSkyPublicKey,
-        one_sky_secret_key: oneSkySecretKey,
-        localization_file_directory_name: localizationFileDirectoryNameForStrings, 
-        localization_file_name: stringsFilename,
-        locale: locale
-      )
-      download_onesky_localizations(
-        one_sky_download_to_project_directory: oneSkyDownloadToProjectDirectory,
-        one_sky_project_id: oneSkyProjectId,
-        one_sky_public_key: oneSkyPublicKey,
-        one_sky_secret_key: oneSkySecretKey,
-        localization_file_directory_name: localizationFileDirectoryNameForStringsDict, 
-        localization_file_name: stringsDictFilename,
-        locale: locale
-      )
+      # Begin download Localizable.stringsdict
+      begin
+
+        stringsDictFilename = "Localizable.stringsdict"
+        directoryName = locale
+
+        if locale == "en"
+            directoryName = "English"
+        end
+            
+        directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
+        Dir.mkdir(directory) unless File.exists?(directory)
+
+        destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsDictFilename}"
+  
+        onesky_download(
+            destination: destination,
+            filename: stringsDictFilename,
+            locale: locale,
+            project_id: oneSkyProjectId,
+            public_key: oneSkyPublicKey,
+            secret_key: oneSkySecretKey
+        )
+  
+      rescue Exception => e
+        puts("Failed to import #{stringsDictFilename} to #{directory})")
+        puts("Exception: #{e}")
+
+      else
+        localizationFilesToCommit.push(destination)
+      end
 
     end
 
     begin
 
-      filesToCommit = ["*/#{stringsFilename}", "*/#{stringsDictFilename}"]
-
-      git_add(path: filesToCommit)
+      git_add(path: localizationFilesToCommit)
       git_commit(
-          path: filesToCommit,
+          path: localizationFilesToCommit,
           message: "[skip ci] Adding latest localization files from OneSky"
       )
 
     rescue Exception => e
-      puts("Failed to commit localization files.. maybe none to commit?")
+      puts("Failed to commit localization files")
       puts("Exception: #{e}")
     end
-  end
-
-  lane :download_onesky_localizations do |options|
-
-    oneSkyDownloadToProjectDirectory = options[:one_sky_download_to_project_directory] || ENV["ONESKY_DOWNLOAD_TO_XCODE_PROJECT_DIRECTORY"]
-    oneSkyProjectId = options[:one_sky_project_id] || ENV["ONESKY_PROJECT_ID"]
-    oneSkyPublicKey = options[:one_sky_public_key] || ENV["ONESKY_PUBLIC_KEY"]
-    oneSkySecretKey = options[:one_sky_secret_key] || ENV["ONESKY_SECRET_KEY"] || ""
-    
-    localizationFileDirectoryName = options[:localization_file_directory_name]
-    localizationFilename = options[:localization_file_name]
-    locale = options[:locale]
-
-    begin
-            
-      directory = "../#{oneSkyDownloadToProjectDirectory}/#{localizationFileDirectoryName}.lproj"
-      Dir.mkdir(directory) unless File.exists?(directory)
-
-      onesky_download(
-          destination: "./#{oneSkyDownloadToProjectDirectory}/#{localizationFileDirectoryName}.lproj/#{localizationFilename}",
-          filename: localizationFilename,
-          locale: locale,
-          project_id: oneSkyProjectId,
-          public_key: oneSkyPublicKey,
-          secret_key: oneSkySecretKey
-      )
-
-      rescue Exception => e
-          puts("Failed to import #{localizationFilename} to #{directory})")
-          puts("Exception: #{e}")
-      end
-
   end
 
   # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
