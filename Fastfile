@@ -430,7 +430,7 @@ platform :ios do
       )
 
     rescue Exception => e
-      puts("Failed to commit localization files")
+      puts("Failed to commit localization files: #{localizationFilesToCommit}")
       puts("Exception: #{e}")
     end
   end
