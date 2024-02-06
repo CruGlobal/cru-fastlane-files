@@ -453,13 +453,12 @@ platform :ios do
 
     latest_build_number = latest_testflight_build_number(
         api_key_path: api_key_path,
-        app_identifier: app_release_bundle_identifier,
-        xcodeproj: xcodeproj
+        app_identifier: app_release_bundle_identifier
     )
 
     specific_build_number = latest_build_number + 1
 
-    increment_build_number(build_number: specific_build_number)
+    increment_build_number(build_number: specific_build_number, xcodeproj: xcodeproj)
   end
 
   # First updates the xcode project code signing settings for each provided target, setting automatic code signing to false and setting the provisioning profile name.
