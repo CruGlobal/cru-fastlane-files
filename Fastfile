@@ -565,6 +565,7 @@ platform :ios do
                 ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"] => ENV["GYM_RELEASE_PROVISIONING_PROFILE"]
             }
         },
+        project: path,
         xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=" + code_signing_team_id
     )
 
