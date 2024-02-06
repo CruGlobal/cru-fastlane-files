@@ -443,15 +443,18 @@ platform :ios do
   # options:
   # - api_key_path: Path to your App Store Connect API Key JSON file.
   # - app_release_bundle_identifier: The bundle identifier for your xcode release configuration.
+  # - xcodeproj: (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
   #
   lane :cru_shared_lane_increment_xcode_project_build_number do |options|
 
     api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
     app_release_bundle_identifier = options[:app_release_bundle_identifier] || ENV["APP_RELEASE_BUNDLE_IDENTIFIER"]
+    xcodeproj = options[:xcodeproj] || ENV["XCODE_PROJECT_PATH"]
 
     latest_build_number = latest_testflight_build_number(
         api_key_path: api_key_path,
-        app_identifier: app_release_bundle_identifier
+        app_identifier: app_release_bundle_identifier,
+        xcodeproj: xcodeproj
     )
 
     specific_build_number = latest_build_number + 1
