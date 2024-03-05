@@ -481,6 +481,7 @@ platform :ios do
   # - match_git_branch:
   # - match_git_url:
   # - match_keychain_name:
+  # - match_type: Define the profile type. Defaults to appstore.
   # - path: Path to your Xcode project
   #
   lane :cru_shared_lane_build_and_deploy_for_testflight_release do |options|
@@ -497,6 +498,7 @@ platform :ios do
     match_git_branch = options[:match_git_branch] || ENV["MATCH_GIT_BRANCH"]
     match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
     match_keychain_name = options[:match_keychain_name] || ENV["MATCH_KEYCHAIN_NAME"]
+    match_type = options[:match_type] || "appstore"
     path = options[:path] || ENV["XCODE_PROJECT_PATH"]
     
 
@@ -551,7 +553,7 @@ platform :ios do
         platform: "ios",
         storage_mode: "git",
         team_id: code_signing_team_id,
-        type: "appstore"
+        type: match_type
     )
 
     # Gym - Release
