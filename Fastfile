@@ -477,10 +477,18 @@ platform :ios do
   # - code_signing_provisioning_profile_names: Comma separated string of provisioning profile names that require code signing.  This comma separated list should match up with the code signing app bundle ids and targets.
   # - code_signing_targets: Comma separated string of targets that require code signing.  This comma separated list should match up with the code signing app bundle ids and provisioning profile names.
   # - deploy_type: 
+  # - distribute_to_testflight: true if distributing to TestFlight.  Defaults to true.
+  # - gym_configuration: The configuration to use when building the app. Defaults to 'Release'.
+  # - gym_export_method: Method used to export the archive.  Defaults to app-store.
+  # - gym_scheme: The project's scheme. Make sure it's marked as Shared.  Defaults to ENV GYM_RELEASE_SCHEME.
+  # - gym_skip_archive: After building, don't archive, effectively not including -archivePath param.
+  # - gym_bundle_identifier: Used in the gym export method for provisioning profile key.
+  # - gym_provisioning_profile: Used in the gym export method for provisioning profile value.
   # - is_running_in_ci: If running fastlane from CI, this is used to create a keychain needed for match.  Local fastlane builds should not need to set this.
   # - match_git_branch:
   # - match_git_url:
   # - match_keychain_name:
+  # - match_type: Define the profile type. Defaults to appstore.
   # - path: Path to your Xcode project
   #
   lane :cru_shared_lane_build_and_deploy_for_testflight_release do |options|
@@ -493,10 +501,18 @@ platform :ios do
     code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
     code_signing_targets = options[:code_signing_targets] || ENV["CODE_SIGNING_TARGETS"]
     code_signing_team_id = ENV["CODE_SIGNING_TEAM_ID"]
+    distribute_to_testflight = options[:distribute_to_testflight] || true
+    gym_configuration = options[:gym_configuration] || "Release"
+    gym_export_method = options[:gym_export_method] || "app-store"
+    gym_scheme = options[:gym_scheme] || ENV["GYM_RELEASE_SCHEME"]
+    gym_skip_archive = options[:gym_skip_archive]
+    gym_bundle_identifier = options[:gym_bundle_identifier] || ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"]
+    gym_provisioning_profile = options[:gym_provisioning_profile] || ENV["GYM_RELEASE_PROVISIONING_PROFILE"]
     is_running_in_ci = options[:is_running_in_ci] || false
     match_git_branch = options[:match_git_branch] || ENV["MATCH_GIT_BRANCH"]
     match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
     match_keychain_name = options[:match_keychain_name] || ENV["MATCH_KEYCHAIN_NAME"]
+    match_type = options[:match_type] || "appstore"
     path = options[:path] || ENV["XCODE_PROJECT_PATH"]
     
 
@@ -538,7 +554,7 @@ platform :ios do
         puts "skipping create keychain..."
     end
 
-    # Match - Release
+    # Match
 
     match(
         api_key_path: api_key_path,
@@ -551,31 +567,35 @@ platform :ios do
         platform: "ios",
         storage_mode: "git",
         team_id: code_signing_team_id,
-        type: "appstore"
+        type: match_type
     )
 
-    # Gym - Release
+    # Gym
 
     release_ipa_path = gym(
-        scheme: ENV["GYM_RELEASE_SCHEME"],
-        configuration: "Release",
-        export_method: "app-store",
+        scheme: gym_scheme,
+        configuration: gym_configuration,
+        export_method: gym_export_method,
         export_options: {
             provisioningProfiles: {
-                ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"] => ENV["GYM_RELEASE_PROVISIONING_PROFILE"]
+                gym_bundle_identifier => gym_provisioning_profile
             }
         },
         project: path,
+        skip_archive: gym_skip_archive,
         xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=" + code_signing_team_id
     )
 
-    # TestFlight - Release
+    # TestFlight
 
-    testflight(
-        api_key_path: api_key_path,
-        app_identifier: app_release_bundle_identifier,
-        ipa: release_ipa_path,
-        skip_waiting_for_build_processing: true
-    )
+    if distribute_to_testflight 
+      testflight(
+          api_key_path: api_key_path,
+          app_identifier: app_release_bundle_identifier,
+          ipa: release_ipa_path,
+          skip_waiting_for_build_processing: true
+      )
+    end
+
   end
 end
