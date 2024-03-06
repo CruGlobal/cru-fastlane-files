@@ -588,7 +588,7 @@ platform :ios do
 
     # TestFlight
 
-    if distribute_to_testflight 
+    if distribute_to_testflight == true
       testflight(
           api_key_path: api_key_path,
           app_identifier: app_release_bundle_identifier,
