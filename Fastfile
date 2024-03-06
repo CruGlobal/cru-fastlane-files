@@ -501,7 +501,7 @@ platform :ios do
     code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
     code_signing_targets = options[:code_signing_targets] || ENV["CODE_SIGNING_TARGETS"]
     code_signing_team_id = ENV["CODE_SIGNING_TEAM_ID"]
-    distribute_to_testflight = options[:distribute_to_testflight] || true
+    distribute_to_testflight = options[:distribute_to_testflight].nil ? true : options[:distribute_to_testflight]
     gym_configuration = options[:gym_configuration] || "Release"
     gym_export_method = options[:gym_export_method] || "app-store"
     gym_scheme = options[:gym_scheme] || ENV["GYM_RELEASE_SCHEME"]
