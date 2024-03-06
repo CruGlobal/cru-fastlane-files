@@ -513,12 +513,17 @@ platform :ios do
     match_git_url = options[:match_git_url] || ENV["MATCH_GIT_URL"]
     match_keychain_name = options[:match_keychain_name] || ENV["MATCH_KEYCHAIN_NAME"]
     match_type = options[:match_type] || "appstore"
-    path = options[:path] || ENV["XCODE_PROJECT_PATH"]
-    
+    path = options[:path] || ENV["XCODE_PROJECT_PATH"]    
 
     app_bundle_ids_array = code_signing_app_bundle_ids.split(",")
     profile_names_array = code_signing_provisioning_profile_names.split(",")
     targets_array = code_signing_targets.split(",")
+
+    puts "lane cru_shared_lane_build_and_deploy_for_testflight_release ..."
+    puts "options"
+    puts options
+    puts "distribute_to_testflight"
+    puts distribute_to_testflight
 
     targets_array.each_with_index do |target, index|
 
