@@ -491,7 +491,6 @@ platform :ios do
   # - code_signing_app_bundle_ids: Comma separated string of bundle ids that require code signing.  This comma separated list should match up with the code signing provisioning profile names and targets.
   # - code_signing_provisioning_profile_names: Comma separated string of provisioning profile names that require code signing.  This comma separated list should match up with the code signing app bundle ids and targets.
   # - code_signing_targets: Comma separated string of targets that require code signing.  This comma separated list should match up with the code signing app bundle ids and provisioning profile names.
-  # - deploy_type: 
   # - distribute_to_testflight: true if distributing to TestFlight.  Defaults to true.
   # - gym_configuration: The configuration to use when building the app. Defaults to 'Release'.
   # - gym_export_method: Method used to export the archive.  Defaults to app-store.
@@ -533,12 +532,6 @@ platform :ios do
     app_bundle_ids_array = code_signing_app_bundle_ids.split(",")
     profile_names_array = code_signing_provisioning_profile_names.split(",")
     targets_array = code_signing_targets.split(",")
-
-    puts "lane cru_shared_lane_build_and_deploy_for_testflight_release ..."
-    puts "options"
-    puts options
-    puts "distribute_to_testflight"
-    puts distribute_to_testflight
 
     targets_array.each_with_index do |target, index|
 
@@ -610,17 +603,12 @@ platform :ios do
 
     if distribute_to_testflight
       
-      puts "distributing to testflight..."
-
       testflight(
           api_key_path: api_key_path,
           app_identifier: app_release_bundle_identifier,
           ipa: release_ipa_path,
           skip_waiting_for_build_processing: true
       )
-    else
-
-      puts "skipping testflight..."
     end
 
   end
