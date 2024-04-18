@@ -305,7 +305,12 @@ platform :ios do
   # options:
   # - code_coverage: Should code coverage be generated? (Xcode 7 and up).
   # - derived_data_path: The directory where build products and other derived data will go.
+  # - device: The name of the simulator type you want to run tests on (e.g. 'iPhone 6' or 'iPhone SE (2nd generation) (14.5)').
+  # - devices: Array of devices to run the tests on (e.g. ['iPhone 6', 'iPad Air', 'iPhone SE (2nd generation) (14.5)']).
+  # - force_quit_simulator: Enabling this option will automatically killall Simulator processes before the run. Defaults to false.
   # - output_directory: The directory in which all reports will be stored.
+  # - reinstall_app: Enabling this option will automatically uninstall the application before running it. Defaults to false.
+  # - reset_simulator: Enabling this option will automatically erase the simulator before running the application. Defaults to false.
   # - result_bundle: Should an Xcode result bundle be generated in the output directory.
   # - scheme: Specificy the name of the scheme you want to run tests on.  The scheme should be marked as shared in Xcode.
   # - xcargs: Pass additional arguments to xcodebuild. Be sure to quote the setting names and values e.g. OTHER_LDFLAGS="-ObjC -lstdc++".
@@ -314,7 +319,12 @@ platform :ios do
 
     code_coverage = options[:code_coverage] || nil
     derived_data_path = options[:derived_data_path] || nil
+    device = options[:device] || nil
+    devices = options[:devices] || nil
+    force_quit_simulator = options[:force_quit_simulator] || false
     output_directory = options[:output_directory] || nil
+    reinstall_app = options[:reinstall_app] || false
+    reset_simulator = options[:reset_simulator] || false
     result_bundle = options[:result_bundle] || false
     scheme = options[:scheme] || ENV["RUN_TESTS_SCHEME"]
     xcargs = options[:xcargs] || nil
@@ -322,7 +332,12 @@ platform :ios do
     run_tests(
         code_coverage: code_coverage,
         derived_data_path: derived_data_path,
+        device: device,
+        devices: devices,
+        force_quit_simulator: force_quit_simulator,
         output_directory: output_directory,
+        reinstall_app: reinstall_app,
+        reset_simulator: reset_simulator,
         result_bundle: result_bundle,
         scheme: scheme,
         xcargs: xcargs
