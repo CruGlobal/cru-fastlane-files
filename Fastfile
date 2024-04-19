@@ -313,7 +313,7 @@ platform :ios do
   # - reset_simulator: Enabling this option will automatically erase the simulator before running the application. Defaults to false.
   # - result_bundle: Should an Xcode result bundle be generated in the output directory.
   # - scheme: Specificy the name of the scheme you want to run tests on.  The scheme should be marked as shared in Xcode.
-  # - should_clear_derived_data
+  # - should_clear_derived_data. Attempts to clear derived data.  Defaults to false.
   # - xcargs: Pass additional arguments to xcodebuild. Be sure to quote the setting names and values e.g. OTHER_LDFLAGS="-ObjC -lstdc++".
   #
   lane :cru_shared_lane_run_tests do |options|
