@@ -415,7 +415,7 @@ platform :ios do
         directoryName = locale
 
         if locale == "en"
-            directoryName = "English"
+            directoryName = "Base"
         end
             
         directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
