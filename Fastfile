@@ -482,6 +482,52 @@ platform :ios do
     increment_build_number(build_number: specific_build_number, xcodeproj: xcodeproj)
   end
 
+  # Get the version number of your project.
+  #
+  # fastlane action: https://docs.fastlane.tools/actions/get_version_number/
+  #
+  # options:
+  # - configuration: (optional) Configuration name, optional. Will be needed if you have altered the configurations from the default or your version number depends on the configuration selected.
+  # - target: (optional) Target name. Will be needed if you have more than one non-test target to avoid being prompted to select one.
+  # - xcodeproj: (optional) Path to the Xcode project to read version number from, or its containing directory, optional. If omitted, or if a directory is passed instead, it will use the first Xcode project found within the given directory, or the project root directory if none is passed.
+  #
+  lane :cru_shared_lane_get_version_number do |options|
+
+    configuration = options[:configuration]
+    target = options[:target]
+    xcodeproj = options[:xcodeproj]
+
+    get_version_number(
+      configuration: configuration,
+      target: target,
+      xcodeproj: xcodeproj
+    )
+
+  end
+
+  # Increment the version number of your project.
+  #
+  # fastlane action: https://docs.fastlane.tools/actions/increment_version_number/
+  #
+  # options:
+  # - bump_type: (optional) The type of this version bump. Available: patch, minor, major.
+  # - version_number: (optional) Change to a specific version. This will replace the bump type value.
+  # - xcodeproj: (optional) You must specify the path to your main Xcode project if it is not in the project root directory.
+  #
+  lane :cru_shared_lane_increment_version_number do |options|
+
+    bump_type = options[:bump_type]
+    version_number = options[:version_number]
+    xcodeproj = options[:xcodeproj]
+
+    increment_version_number(
+      bump_type: bump_type,
+      version_number: version_number,
+      xcodeproj: xcodeproj
+    )
+
+  end
+
   # First updates the xcode project code signing settings for each provided target, setting automatic code signing to false and setting the provisioning profile name.
   # Then uses match to fetch certificates from a git storage and adds them to the xcode project based on code signing settings.
   #
