@@ -665,3 +665,29 @@ platform :ios do
 
   end
 end
+
+# Run swift code validation using SwiftLint.
+#
+# fastlane action: https://docs.fastlane.tools/actions/swiftlint/
+#
+# options:
+# - config_file: (optional) The path of the configuration file.
+# - ignore_exit_status: (optional) Allow fastlane to continue even if SwiftLint returns a non-zero exit status.
+# - mode: (optional) SwiftLint mode: :lint (default) or :autocorrect.
+# - raise_if_swiftlint_error: (optional) Allow fastlane to raise an error if swiftlint fails.
+#
+lane :cru_shared_lane_swift_lint do |options|
+
+  config_file = options[:config_file]
+  ignore_exit_status = options[:ignore_exit_status]
+  mode = options[:mode]
+  raise_if_swiftlint_error = options[:raise_if_swiftlint_error]
+
+  swiftlint(
+    config_file: config_file,
+    ignore_exit_status: ignore_exit_status,
+    mode: :mode,
+    raise_if_swiftlint_error: raise_if_swiftlint_error
+  )
+
+end
