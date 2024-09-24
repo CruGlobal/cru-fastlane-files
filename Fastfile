@@ -98,7 +98,7 @@ platform :ios do
     locales.each do |locale|
       begin
         dir = "../#{scheme}/#{locale}.lproj"
-        Dir.mkdir(dir) unless File.exists?(dir)
+        Dir.mkdir(dir) unless File.exist?(dir)
         onesky_download(
             public_key: ENV["ONESKY_PUBLIC_KEY"],
             secret_key: ENV["ONESKY_SECRET_KEY"],
@@ -387,7 +387,7 @@ platform :ios do
         end
             
         directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
-        Dir.mkdir(directory) unless File.exists?(directory)
+        Dir.mkdir(directory) unless File.exist?(directory)
 
         destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsFilename}"
   
@@ -419,7 +419,7 @@ platform :ios do
         end
             
         directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
-        Dir.mkdir(directory) unless File.exists?(directory)
+        Dir.mkdir(directory) unless File.exist?(directory)
 
         destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsDictFilename}"
   
