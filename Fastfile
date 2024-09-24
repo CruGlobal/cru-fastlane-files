@@ -387,7 +387,7 @@ platform :ios do
         end
             
         directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
-        Dir.mkdir(directory) unless File.exists?(directory)
+        Dir.mkdir(directory) unless File.exist?(directory)
 
         destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsFilename}"
   
@@ -419,7 +419,7 @@ platform :ios do
         end
             
         directory = "../#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj"
-        Dir.mkdir(directory) unless File.exists?(directory)
+        Dir.mkdir(directory) unless File.exist?(directory)
 
         destination = "./#{oneSkyDownloadToProjectDirectory}/#{directoryName}.lproj/#{stringsDictFilename}"
   
