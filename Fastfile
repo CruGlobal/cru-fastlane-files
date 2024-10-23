@@ -545,6 +545,7 @@ platform :ios do
   # - code_signing_targets: Comma separated string of targets that require code signing.  This comma separated list should match up with the code signing app bundle ids and provisioning profile names.
   # - distribute_to_testflight: true if distributing to TestFlight.  Defaults to true.
   # - gym_configuration: The configuration to use when building the app. Defaults to 'Release'.
+  # - gym_destination: (Optional) Use a custom destination for building the app.
   # - gym_export_method: Method used to export the archive.  Defaults to app-store.
   # - gym_scheme: The project's scheme. Make sure it's marked as Shared.  Defaults to ENV GYM_RELEASE_SCHEME.
   # - gym_skip_archive: After building, don't archive, effectively not including -archivePath param.
@@ -569,6 +570,7 @@ platform :ios do
     code_signing_team_id = ENV["CODE_SIGNING_TEAM_ID"]
     distribute_to_testflight = options[:distribute_to_testflight].nil? ? true : options[:distribute_to_testflight]
     gym_configuration = options[:gym_configuration] || "Release"
+    gym_destination = options[:gym_destination]
     gym_export_method = options[:gym_export_method] || "app-store"
     gym_scheme = options[:gym_scheme] || ENV["GYM_RELEASE_SCHEME"]
     gym_skip_archive = options[:gym_skip_archive]
@@ -640,6 +642,7 @@ platform :ios do
     release_ipa_path = gym(
         scheme: gym_scheme,
         configuration: gym_configuration,
+        destination: gym_destination,
         export_method: gym_export_method,
         export_options: {
             provisioningProfiles: {
