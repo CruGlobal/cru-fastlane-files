@@ -543,7 +543,11 @@ platform :ios do
   # - code_signing_app_bundle_ids: Comma separated string of bundle ids that require code signing.  This comma separated list should match up with the code signing provisioning profile names and targets.
   # - code_signing_provisioning_profile_names: Comma separated string of provisioning profile names that require code signing.  This comma separated list should match up with the code signing app bundle ids and targets.
   # - code_signing_targets: Comma separated string of targets that require code signing.  This comma separated list should match up with the code signing app bundle ids and provisioning profile names.
+  # - distribute_to_firebase: true if distributing to Firebase.  Defaults to false.
   # - distribute_to_testflight: true if distributing to TestFlight.  Defaults to true.
+  # - firebase_googleservice_info_plist_path: The path to your GoogleService-Info.plist file, relative to the archived product path. Set to GoogleService-Info.plist by default.
+  # - firebase_groups: Groups are specified using group aliases, which you can look up in the Firebase console. Comma separated example: "qa-team, trusted-testers".
+  # - firebase_release_notes_file: Path to a plain text file.
   # - gym_configuration: The configuration to use when building the app. Defaults to 'Release'.
   # - gym_destination: (Optional) Use a custom destination for building the app.
   # - gym_export_method: Method used to export the archive.  Defaults to app-store.
@@ -568,7 +572,11 @@ platform :ios do
     code_signing_provisioning_profile_names = options[:code_signing_provisioning_profile_names] || ENV["CODE_SIGNING_PROVISIONING_PROFILE_NAMES"]
     code_signing_targets = options[:code_signing_targets] || ENV["CODE_SIGNING_TARGETS"]
     code_signing_team_id = ENV["CODE_SIGNING_TEAM_ID"]
+    distribute_to_firebase = options[:distribute_to_firebase].nil? ? false : options[:distribute_to_firebase]
     distribute_to_testflight = options[:distribute_to_testflight].nil? ? true : options[:distribute_to_testflight]
+    firebase_googleservice_info_plist_path = options[:firebase_googleservice_info_plist_path]
+    firebase_groups = options[:firebase_groups]
+    firebase_release_notes_file = options[:firebase_release_notes_file]
     gym_configuration = options[:gym_configuration] || "Release"
     gym_destination = options[:gym_destination]
     gym_export_method = options[:gym_export_method] || "app-store"
@@ -663,6 +671,17 @@ platform :ios do
           app_identifier: app_release_bundle_identifier,
           ipa: release_ipa_path,
           skip_waiting_for_build_processing: true
+      )
+    end
+
+    # Firebase
+
+    if distribute_to_firebase
+    
+      firebase_app_distribution(
+        googleservice_info_plist_path: firebase_googleservice_info_plist_path,
+        groups: firebase_groups,
+        release_notes_file: firebase_release_notes_file
       )
     end
 
