@@ -456,6 +456,21 @@ platform :ios do
     end
   end
 
+  # Increments the xcode project build number by 1 using the latest firebase distribution build number to increment against.
+  #
+  # options:
+  # - firebase_googleservice_info_plist_path: The path to your GoogleService-Info.plist file, relative to the archived product path. Set to GoogleService-Info.plist by default.
+  # - xcodeproj: (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
+  #
+  lane :cru_shared_lane_increment_xcode_project_build_number_from_latest_firebase_distribution do
+    
+    latest_release = firebase_app_distribution_get_latest_release(
+      googleservice_info_plist_path: firebase_googleservice_info_plist_path
+    )
+    
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 }, xcodeproj: xcodeproj)
+  end
+
   # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
   #
   # fastlane action: https://docs.fastlane.tools/actions/increment_build_number/
