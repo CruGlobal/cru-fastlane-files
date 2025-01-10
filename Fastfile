@@ -464,6 +464,9 @@ platform :ios do
   #
   lane :cru_shared_lane_increment_xcode_project_build_number_from_latest_firebase_distribution do
     
+    firebase_googleservice_info_plist_path = options[:firebase_googleservice_info_plist_path]
+    xcodeproj = options[:xcodeproj] || ENV["XCODE_PROJECT_PATH"]
+
     latest_release = firebase_app_distribution_get_latest_release(
       googleservice_info_plist_path: firebase_googleservice_info_plist_path
     )
