@@ -462,7 +462,7 @@ platform :ios do
   # - firebase_googleservice_info_plist_path: The path to your GoogleService-Info.plist file, relative to the archived product path. Set to GoogleService-Info.plist by default.
   # - xcodeproj: (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
   #
-  lane :cru_shared_lane_increment_xcode_project_build_number_from_latest_firebase_distribution do
+  lane :cru_shared_lane_increment_xcode_project_build_number_from_latest_firebase_distribution do |options|
     
     firebase_googleservice_info_plist_path = options[:firebase_googleservice_info_plist_path]
     xcodeproj = options[:xcodeproj] || ENV["XCODE_PROJECT_PATH"]
