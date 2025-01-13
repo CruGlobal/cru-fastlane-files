@@ -460,15 +460,18 @@ platform :ios do
   #
   # options:
   # - firebase_googleservice_info_plist_path: The path to your GoogleService-Info.plist file, relative to the archived product path. Set to GoogleService-Info.plist by default.
+  # - firebase_service_credentials_file: The path to your Google service account json file.
   # - xcodeproj: (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
   #
   lane :cru_shared_lane_increment_xcode_project_build_number_from_latest_firebase_distribution do |options|
     
     firebase_googleservice_info_plist_path = options[:firebase_googleservice_info_plist_path]
+    firebase_service_credentials_file = options[:firebase_service_credentials_file]
     xcodeproj = options[:xcodeproj] || ENV["XCODE_PROJECT_PATH"]
 
     latest_release = firebase_app_distribution_get_latest_release(
-      googleservice_info_plist_path: firebase_googleservice_info_plist_path
+      googleservice_info_plist_path: firebase_googleservice_info_plist_path,
+      service_credentials_file: firebase_service_credentials_file
     )
     
     increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 }, xcodeproj: xcodeproj)
@@ -566,6 +569,7 @@ platform :ios do
   # - firebase_googleservice_info_plist_path: The path to your GoogleService-Info.plist file, relative to the archived product path. Set to GoogleService-Info.plist by default.
   # - firebase_groups: Groups are specified using group aliases, which you can look up in the Firebase console. Comma separated example: "qa-team, trusted-testers".
   # - firebase_release_notes_file: Path to a plain text file.
+  # - firebase_service_credentials_file: The path to your Google service account json file.
   # - gym_configuration: The configuration to use when building the app. Defaults to 'Release'.
   # - gym_destination: (Optional) Use a custom destination for building the app.
   # - gym_export_method: Method used to export the archive.  Defaults to app-store.
@@ -595,6 +599,7 @@ platform :ios do
     firebase_googleservice_info_plist_path = options[:firebase_googleservice_info_plist_path]
     firebase_groups = options[:firebase_groups]
     firebase_release_notes_file = options[:firebase_release_notes_file]
+    firebase_service_credentials_file = options[:firebase_service_credentials_file]
     gym_configuration = options[:gym_configuration] || "Release"
     gym_destination = options[:gym_destination]
     gym_export_method = options[:gym_export_method] || "app-store"
@@ -699,7 +704,8 @@ platform :ios do
       firebase_app_distribution(
         googleservice_info_plist_path: firebase_googleservice_info_plist_path,
         groups: firebase_groups,
-        release_notes_file: firebase_release_notes_file
+        release_notes_file: firebase_release_notes_file,
+        service_credentials_file: firebase_service_credentials_file
       )
     end
 
