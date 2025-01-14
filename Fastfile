@@ -469,8 +469,10 @@ platform :ios do
     firebase_service_credentials_file = options[:firebase_service_credentials_file]
     xcodeproj = options[:xcodeproj] || ENV["XCODE_PROJECT_PATH"]
 
+    firebaseAppId = get_info_plist_value(path: firebase_googleservice_info_plist_path, key: "GOOGLE_APP_ID")
+
     latest_release = firebase_app_distribution_get_latest_release(
-      googleservice_info_plist_path: firebase_googleservice_info_plist_path,
+      app: firebaseAppId,
       service_credentials_file: firebase_service_credentials_file
     )
     
