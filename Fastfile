@@ -714,8 +714,10 @@ platform :ios do
 
     if distribute_to_firebase
     
+      firebaseAppId = get_info_plist_value(path: firebase_googleservice_info_plist_path, key: "GOOGLE_APP_ID")
+
       firebase_app_distribution(
-        googleservice_info_plist_path: firebase_googleservice_info_plist_path,
+        app: firebaseAppId,
         groups: firebase_groups,
         release_notes_file: firebase_release_notes_file,
         service_credentials_file: firebase_service_credentials_file
