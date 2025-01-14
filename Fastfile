@@ -476,7 +476,14 @@ platform :ios do
       service_credentials_file: firebase_service_credentials_file
     )
 
-    latestBuildNumber = latest_release[:buildVersion].nil? ? "0" : latest_release[:buildVersion]
+    initialBuildNumber = "0"
+    latestBuildNumber = initialBuildNumber
+
+    if !latest_release.nil?
+      latestBuildNumber = latest_release[:buildVersion].nil? ? initialBuildNumber : latest_release[:buildVersion]
+    else
+      latestBuildNumber = initialBuildNumber
+    end
     
     increment_build_number({ build_number: latestBuildNumber.to_i + 1 }, xcodeproj: xcodeproj)
   end
