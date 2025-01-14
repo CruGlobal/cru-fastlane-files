@@ -484,8 +484,10 @@ platform :ios do
     else
       latestBuildNumber = initialBuildNumber
     end
+
+    latestBuildNumber = latestBuildNumber.to_i + 1
     
-    increment_build_number({ build_number: latestBuildNumber.to_i + 1 }, xcodeproj: xcodeproj)
+    increment_build_number(build_number: latestBuildNumber, xcodeproj: xcodeproj)
   end
 
   # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
