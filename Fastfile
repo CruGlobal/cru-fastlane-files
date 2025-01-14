@@ -475,8 +475,10 @@ platform :ios do
       app: firebaseAppId,
       service_credentials_file: firebase_service_credentials_file
     )
+
+    latestBuildNumber = latest_release[:buildVersion].nil? ? "0" : latest_release[:buildVersion]
     
-    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 }, xcodeproj: xcodeproj)
+    increment_build_number({ build_number: latestBuildNumber.to_i + 1 }, xcodeproj: xcodeproj)
   end
 
   # Increments the xcode project build number by 1 using the latest testflight build number to increment against.
