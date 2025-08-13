@@ -752,7 +752,7 @@ lane :cru_shared_lane_swift_lint do |options|
   swiftlint(
     config_file: config_file,
     ignore_exit_status: ignore_exit_status,
-    mode: :mode,
+    mode: mode,
     path: path,
     raise_if_swiftlint_error: raise_if_swiftlint_error
   )
