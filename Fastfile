@@ -87,47 +87,6 @@ platform :ios do
     cru_notify_users(message: "#{target} iOS Beta Build ##{build_number} released to TestFlight.")
   end
 
-  # Localization functions
-
-  desc "Download latest localization files from Onesky"
-  lane :cru_download_localizations do
-    locales = ENV["ONESKY_ENABLED_LOCALIZATIONS"].split(',')
-    filename = ENV["ONESKY_FILENAME"]
-    scheme = ENV['CRU_SCHEME']
-
-    locales.each do |locale|
-      begin
-        dir = "../#{scheme}/#{locale}.lproj"
-        Dir.mkdir(dir) unless File.exist?(dir)
-        onesky_download(
-            public_key: ENV["ONESKY_PUBLIC_KEY"],
-            secret_key: ENV["ONESKY_SECRET_KEY"],
-            project_id: ENV["ONESKY_PROJECT_ID"],
-            locale: locale,
-            filename: filename,
-            destination: "./#{scheme}/#{locale}.lproj/#{filename}"
-        )
-      rescue
-        puts("Failed to import #{locale}")
-      end
-    end
-
-    cru_commit_localization_files(filename: filename)
-  end
-
-  desc 'Commit downloaded localization files to default branch and push to remote'
-  lane :cru_commit_localization_files do |options|
-    filename = options[:filename]
-
-    begin
-      git_add(path: "*/#{filename}")
-      git_commit(path: "*/#{filename}",
-                 message: "[skip ci] Adding latest localization files from Onesky")
-    rescue
-      puts("Failed to commit localization files.. maybe none to commit?")
-    end
-  end
-
   # Helper functions
   
   lane :cru_build_app do |options|
@@ -135,15 +94,10 @@ platform :ios do
     type = options[:type] || 'appstore'
     export_method = options[:export_method] || 'app-store'
 
-    if ENV['CRU_SKIP_LOCALIZATION_DOWNLOAD'].nil?
-      cru_download_localizations
-    end
-
     automatic_code_signing(
         use_automatic_signing: false,
         profile_name: profile_name
     )
-
 
     unless options.key?(:skip_create_keychain) && options[:skip_create_keychain]
       # Travis requires a keychain to be created to store the certificates in, however
