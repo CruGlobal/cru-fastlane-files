@@ -727,11 +727,14 @@ lane :cru_shared_lane_app_store do |options|
   api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
   app_identifier = options[:app_identifier] || ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"]
   app_version = options[:app_version]
+  username = options[:username] || ENV["USERNAME"]
 
   deliver(
     api_key_path: api_key_path,
     app_identifier: app_identifier,
     app_version: app_version,
+    username: username,
+    force: false,
     skip_binary_upload: true,
     skip_screenshots: true,
     sync_screenshots: false,
@@ -741,6 +744,7 @@ lane :cru_shared_lane_app_store do |options|
     automatic_release: true,
     phased_release: false,
     submit_for_review: false,
+    precheck_include_in_app_purchases: false,
     reset_ratings: false,
     edit_live: false,
     use_live_version: false
