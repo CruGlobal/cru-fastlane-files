@@ -712,3 +712,36 @@ lane :cru_shared_lane_swift_lint do |options|
   )
 
 end
+
+# Run Fastlane AppStore.
+#
+# fastlane action: https://docs.fastlane.tools/actions/appstore/
+#
+# options:
+# - api_key_path: Path to your App Store Connect API Key JSON file.
+# - app_identifier: The bundle identifier of your app.
+# - app_version: The version that should be edited or created.
+#
+lane :cru_shared_lane_app_store do |options|
+
+  api_key_path = options[:api_key_path] || ENV["APP_STORE_CONNECT_API_KEY_JSON_FILE_PATH"]
+  app_identifier = options[:app_identifier]
+  app_version = options[:app_version]
+
+  deliver(
+    api_key_path: api_key_path,
+    app_identifier: app_identifier,
+    app_version: app_version,
+    skip_binary_upload: true,
+    skip_screenshots: true,
+    sync_screenshots: false,
+    overwrite_screenshots: false,
+    skip_metadata: false,
+    skip_app_version_update: true,
+    automatic_release: true,
+    phased_release: false,
+    submit_for_review: false,
+    reset_ratings: false
+  )
+
+end
