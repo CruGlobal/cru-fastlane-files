@@ -728,18 +728,20 @@ lane :cru_shared_lane_app_store do |options|
   app_identifier = options[:app_identifier] || ENV["GYM_RELEASE_APP_BUNDLE_IDENTIFIER"]
   app_version = options[:app_version]
   username = options[:username] || ENV["USERNAME"]
+  force = options[:force] || false
+  skip_metadata = options[:skip_metadata] || false
 
   deliver(
     api_key_path: api_key_path,
     app_identifier: app_identifier,
     app_version: app_version,
     username: username,
-    force: false,
+    force: force,
     skip_binary_upload: true,
     skip_screenshots: true,
     sync_screenshots: false,
     overwrite_screenshots: false,
-    skip_metadata: false,
+    skip_metadata: skip_metadata,
     skip_app_version_update: true,
     automatic_release: true,
     phased_release: false,
